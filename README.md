@@ -83,13 +83,47 @@ You choose the data types, keys, constraints and defaults. Any design that meets
 
 ## Task details
 
-1. **Create the three tables.** Below the comment lines of `schema.sql`, write one `CREATE TABLE` statement for each table, with every listed column. Pick a data type for each column now; you can refine types and add constraints in the next tasks. Create `students` and `courses` before `enrollments`, because a foreign key can only point at a table that already exists.
+1. **Create the three tables.** Below the comment lines of `schema.sql`, write one `CREATE TABLE` statement for each table, with every listed column. Create `students` and `courses` before `enrollments`, because a foreign key can only point at a table that already exists.
    - Until all three tables and ten columns exist, the test says `schema.sql must create a table named ...` or `Table ... has no column named ...`.
    - If the file has an SQL mistake, every test says `schema.sql did not run:` followed by PostgreSQL's message. Fix that first.
-2. **Make `students` meet criterion 1.** For each column, decide which data type fits its values and which rules PostgreSQL must enforce: which column identifies a student, which values are required, which must be unique, and how a name longer than 100 characters is refused. A failure starts with `Criterion 1 (students):` and names the missing rule.
-3. **Make `courses` meet criterion 2.** Decide which column identifies a course and what type suits a code like `SQL101`, which columns are required, and how to refuse a capacity that is not greater than 0. A failure starts with `Criterion 2 (courses):`.
-4. **Connect students and courses (criteria 3 and 5).** In `enrollments`, decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to. A failure starts with `Criterion 3 (many-to-many):` or `Criterion 5 (existing student and course):`.
-5. **Record when and how well (criterion 4).** For `enrolled_at`, choose a type that holds a date and a time of day, make it required, and give it a default so PostgreSQL fills in the current time. For `grade`, choose an exact decimal type that keeps two decimal places, allow it to be empty, and refuse values outside 0 to 100. A failure starts with `Criterion 4 (enrollment time and grade):`.
+
+   <details><summary>Hint</summary>
+
+   Pick a data type for each column now; you can refine types and add constraints in the next tasks.
+
+   </details>
+
+2. **Make `students` meet criterion 1.** A failure starts with `Criterion 1 (students):` and names the missing rule.
+
+   <details><summary>Hint</summary>
+
+   For each column, decide which data type fits its values and which rules PostgreSQL must enforce: which column identifies a student, which values are required, which must be unique, and how a name longer than 100 characters is refused.
+
+   </details>
+
+3. **Make `courses` meet criterion 2.** A failure starts with `Criterion 2 (courses):`.
+
+   <details><summary>Hint</summary>
+
+   Decide which column identifies a course and what type suits a code like `SQL101`, which columns are required, and how to refuse a capacity that is not greater than 0.
+
+   </details>
+
+4. **Connect students and courses (criteria 3 and 5)** in `enrollments`. A failure starts with `Criterion 3 (many-to-many):` or `Criterion 5 (existing student and course):`.
+
+   <details><summary>Hint</summary>
+
+   Decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to.
+
+   </details>
+
+5. **Record when and how well (criterion 4)** in the `enrolled_at` and `grade` columns. A failure starts with `Criterion 4 (enrollment time and grade):`.
+
+   <details><summary>Hint</summary>
+
+   For `enrolled_at`, choose a type that holds a date and a time of day, make it required, and give it a default so PostgreSQL fills in the current time. For `grade`, choose an exact decimal type that keeps two decimal places, allow it to be empty, and refuse values outside 0 to 100.
+
+   </details>
 
 **Starting over:** delete every line of `schema.sql` below its comment block. The shipped file holds only comments, so all five tests fail again.
 
