@@ -12,7 +12,7 @@ import java.util.HexFormat;
 import java.util.Properties;
 
 /**
- * Creates a new, uniquely named lab database on your local PostgreSQL server, loads schema.sql
+ * Creates a new, uniquely named lab database on your local PostgreSQL server, loads src/main/sql/schema.sql
  * into it, and drops that database again when the tests finish.
  *
  * Safety: each run invents a fresh name such as relational_design_lab_3f9c0a1b7d2e and creates it.
@@ -50,7 +50,7 @@ final class LabDatabase {
         if (host.startsWith("/") || host.contains("\\") || host.contains(",")) {
             throw new SQLException("PGHOST is set to \"" + host + "\", which is not a host name. "
                     + "The tests connect over TCP, so set PGHOST to a host name or IP address such as localhost "
-                    + "(see README.md, Setup).");
+                    + "(see the lab instructions, Setup).");
         }
         return host.contains(":") ? "[" + host + "]" : host;
     }
@@ -92,7 +92,7 @@ final class LabDatabase {
                     continue; // someone else's database has this name: leave it alone and try another
                 }
                 throw new SQLException("Could not reach PostgreSQL to create the lab database. "
-                        + "Check that the server is running and that the connection check in README.md "
+                        + "Check that the server is running and that the connection check in the lab instructions "
                         + "(Prerequisites) works with the same settings. Server said: " + e.getMessage(), e);
             }
         }
@@ -112,7 +112,7 @@ final class LabDatabase {
 
     /** Runs the learner's schema.sql; returns null on success or the error text. */
     static String loadSchema(Connection c) throws IOException {
-        String sql = Files.readString(Path.of("schema.sql"));
+        String sql = Files.readString(Path.of("src", "main", "sql", "schema.sql"));
         try (Statement s = c.createStatement()) {
             s.execute(sql);
             return null;

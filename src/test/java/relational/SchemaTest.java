@@ -100,7 +100,7 @@ class SchemaTest {
             p.setString(2, column);
             try (ResultSet r = p.executeQuery()) {
                 if (!r.next()) {
-                    fail("Table " + table + " has no column named " + column + ". Use the names listed in README.md.");
+                    fail("Table " + table + " has no column named " + column + ". Use the names listed in the lab instructions.");
                 }
                 return r.getString(1);
             }
