@@ -99,7 +99,7 @@ def column_type(db, table: str, column: str) -> str:
         "SELECT data_type FROM information_schema.columns "
         "WHERE table_schema = 'public' AND table_name = %s AND column_name = %s", (table, column)).fetchone()
     if row is None:
-        pytest.fail(f"Table {table} has no column named {column}. Use the names listed in the lab instructions.", pytrace=False)
+        pytest.fail(f"Table {table} has no column named {column}. Use the names listed in the lab README.", pytrace=False)
     return row[0]
 
 
