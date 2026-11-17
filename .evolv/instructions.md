@@ -1,25 +1,23 @@
 # Relational Design lab: a course enrollment schema
 
 You design the database for a course coordinator: three PostgreSQL tables, `students`, `courses` and `enrollments`, that refuse bad data on their own.
-You write them in one file, `src/main/sql/schema.sql`.
-The tests load your file into a fresh database and try inserts and deletes that your tables must accept or reject.
+You write them in one file, `src/schema.sql`.
+The tests load your file into a fresh PostgreSQL database and try inserts and deletes that your tables must accept or reject.
 
-**Time:** about 30 minutes for the tasks, plus up to 10 minutes the first time if your PostgreSQL connection needs the [setup](#setup) steps.
+**Time:** about 30 minutes.
 
-## Before you start: PostgreSQL
-
-The tests need a PostgreSQL server they can reach (16 or later). See [Prerequisites](#prerequisites) for the connection check, and [Setup](#setup) if your server needs other connection settings or a password.
-If no server is reachable, every test fails with `Could not reach PostgreSQL to create the lab database`. That is a missing prerequisite, not a mistake in your schema.
+You need no database server of your own: the tests start a private PostgreSQL 16 for each run and delete it afterwards.
 
 ## Quick start
 
-1. Open `src/main/sql/schema.sql`. It holds only comments.
+1. Open `src/schema.sql`. It holds only comments.
 2. Select **Run Tests** before you change anything.
 
-   **All 5 tests fail at first. That is expected: the file holds no tables yet.**
+   **All 5 visible tests fail at first. That is expected: the file holds no tables yet.**
    Each failure names the task, table, column or criterion to fix next.
 3. Work through the checklist below. After each task, select **Run Tests** again and read the remaining failures.
-4. **You are finished when all 5 tests pass.** Then select **Submit**.
+4. **You are finished when all 5 visible tests pass.** Then select **Submit**.
+   Submitting also runs held-out tests you can't see. They try the edge cases of each criterion, so meet every criterion in full, not only the cases the visible tests try.
 
 ```
 OPEN schema.sql -> RUN TESTS: 5 fail (expected)
@@ -31,19 +29,18 @@ In words: open the file, run the tests, read which tasks fail, complete one task
 
 ## Checklist
 
-All five tasks are in `src/main/sql/schema.sql`. Read [the user story](#the-user-story) first.
+All five tasks are in `src/schema.sql`. Read [the user story](#the-user-story) first.
 
-- [ ] Task 1: create the three tables (test `task1Tables`)
-- [ ] Task 2: make `students` meet criterion 1 (test `task2Students`)
-- [ ] Task 3: make `courses` meet criterion 2 (test `task3Courses`)
-- [ ] Task 4: connect students and courses, criteria 3 and 5 (test `task4EnrollmentKeys`)
-- [ ] Task 5: record when and how well, criterion 4 (test `task5EnrollmentDefaults`)
+- [ ] Task 1: create the three tables (test `test_task1_tables`)
+- [ ] Task 2: make `students` meet criterion 1 (test `test_task2_students`)
+- [ ] Task 3: make `courses` meet criterion 2 (test `test_task3_courses`)
+- [ ] Task 4: connect students and courses, criteria 3 and 5 (test `test_task4_enrollment_keys`)
+- [ ] Task 5: record when and how well, criterion 4 (test `test_task5_enrollment_defaults`)
 
 A task is done when its test passes.
-Edit only `schema.sql`. The tests in `src/test/java/relational/` are restored to their original state before your work is graded, so changes to them do not count. Leave the build file `pom.xml` and `expected/test-summary.txt` as they are.
+Edit only `schema.sql`. The tests in `test/` are restored to their original state before your work is graded, so changes to them do not count.
 
-From a terminal in the project folder, you can run one task's test on its own, for example `mvn -q test -Dtest='SchemaTest#task1Tables'`, or all of them with `mvn -q test`.
-`WARNING:` lines from Java or Maven, such as `WARNING: A restricted method ...`, are not test failures.
+From a terminal in the project folder, you can run one task's test on its own, for example `python -m pytest -q -k task1`, or all of them with `python -m pytest -q`.
 
 ## The user story
 
@@ -108,7 +105,7 @@ Work in `enrollments`. A failure starts with `Criterion 3 (many-to-many):` or `C
 
 <details><summary>Hint</summary>
 
-Decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to.
+Decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to. Criterion 5 also says what happens when someone tries to delete a student who has enrollments.
 
 </details>
 
@@ -124,11 +121,17 @@ For `enrolled_at`, choose a type that holds a date and a time of day, make it re
 
 **Starting over:** delete every line of `schema.sql` below its comment block. The shipped file holds only comments, so all five tests fail again.
 
+## Try it by hand (optional, not tested)
+
+`python -m test.practice src/schema.sql` starts a private PostgreSQL, runs your file in a new, empty database, and opens a `psql` prompt on it.
+Try inserts the criteria should accept or reject, and use `\d students` to see a table's columns and constraints.
+Leave with `\q`: the practice database is deleted, so the next start is fresh.
+
 ## What the tests do
 
-Each run creates a new database with a unique name such as `relational_design_lab_3f9c0a1b7d2e`, runs your `schema.sql` in it, runs the tests, and drops that database.
-It never touches a database it did not create. While a run is in progress, the database's name is in `target/lab-database.txt`.
-The tests talk only to that PostgreSQL server.
+The first test starts a private PostgreSQL 16 from the `pgserver` package in a temporary folder.
+Every test then gets its own new, empty database, runs your `schema.sql` in it, tries its inserts and deletes, and drops that database.
+At the end of the run the server and its folder are deleted. The tests never connect to any other database.
 
 ## Using an AI assistant
 
@@ -136,52 +139,11 @@ If you use an AI assistant, ask it to explain, not to answer.
 "Explain what a composite primary key does" teaches you design; "write my schema" does not.
 Check any explanation with a test run before you trust it.
 
-## Prerequisites
-
-| Tool | Version | Check |
-| --- | --- | --- |
-| PostgreSQL server and `psql` | 16 or later | the connection check below |
-| JDK (only for terminal runs) | 17 or later | `java -version` |
-| Apache Maven (only for terminal runs) | 3.9 or later | `mvn -v` |
-
-### Connection check
-
-The tests connect to `localhost` port `5432` as your login user, through database `postgres`. Check that the same connection works:
-
-```
-psql -h localhost -p 5432 -d postgres -c "SELECT version();"
-```
-
-It should print one row starting `PostgreSQL 16` (or later) without asking for a password.
-
-## Setup
-
-Only if the connection check needs other values: the tests read the same environment variables as `psql`.
-
-| Variable | Meaning | Default |
-| --- | --- | --- |
-| `PGHOST` | server host name (not a socket folder) | `localhost` |
-| `PGPORT` | server port | `5432` |
-| `PGUSER` | a PostgreSQL user allowed to create databases | your login name |
-| `PGDATABASE` | an existing database to connect to first | `postgres` |
-
-For a terminal run, set the ones you need in that terminal, for example `export PGUSER=postgres` (macOS or Linux) or `$env:PGUSER = "postgres"` (Windows PowerShell). They last until you close it.
-
-**If your server asks for a password**, put it in a password file, which both `psql` and the tests read. Write one line, `localhost:5432:*:postgres:your-password`, with your own port, user and password:
-
-- macOS or Linux: in `~/.pgpass`, then run `chmod 600 ~/.pgpass` (`psql` ignores a password file that others can read).
-- Windows: in `%APPDATA%\postgresql\pgpass.conf` (create the `postgresql` folder if it is missing).
-
-Never write a password into `schema.sql` or any file you share. The tests also accept a `PGPASSWORD` variable, but PostgreSQL recommends against it, because on some systems other users can read it.
-
 ## Troubleshooting
 
 | What you see | What to do |
 | --- | --- |
-| `Could not reach PostgreSQL to create the lab database`, `Connection refused` or `could not connect` | Run the [connection check](#connection-check). If it fails too, start your PostgreSQL server or check its port. |
-| `password authentication failed` or `no password was provided` | Set up a [password file](#setup), or set `PGUSER`. |
-| `role "..." does not exist` | Your login name is not a PostgreSQL user. Set `PGUSER` to one that is, such as `postgres` (see [Setup](#setup)). |
-| `permission denied to create database` | Use a PostgreSQL user that may create databases, such as `postgres`. |
-| `PGHOST is set to "...", which is not a host name` | The tests connect over TCP. Set `PGHOST` to `localhost` or your server's host name. |
+| `pgserver package, which is not installed` | Run `python -m pip install -r requirements.txt`. `pgserver` needs Python 3.9 to 3.12; **Run Tests** uses a supported Python. |
 | `schema.sql did not run: ... relation "students" does not exist` | A foreign key points at a table created later in the file. Create `students` and `courses` first. |
-| A run was interrupted | Drop the database named in `target/lab-database.txt`, for example `psql -h localhost -d postgres -c "DROP DATABASE relational_design_lab_3f9c0a1b7d2e;"` with the name from the file. |
+| `schema.sql did not run: ... syntax error` | Read the line PostgreSQL quotes. A missing comma between columns or a missing semicolon between statements is the usual cause. |
+| `This statement should be rejected by a rule for that criterion, but the error was different` | PostgreSQL refused the row for another reason, for example a type that cannot hold the value. Read its message and fix that column first. |
