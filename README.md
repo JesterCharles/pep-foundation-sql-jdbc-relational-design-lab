@@ -1,63 +1,46 @@
 # Relational Design lab: a course enrollment schema
 
-You design the database for a course coordinator: three PostgreSQL tables, `students`, `courses` and `enrollments`, that refuse bad data on their own. You write them in one file, `starter/schema.sql`. The tests load your file into a fresh database and try inserts and deletes that your tables must accept or reject.
+You design the database for a course coordinator: three PostgreSQL tables, `students`, `courses` and `enrollments`, that refuse bad data on their own.
+You write them in one file, `src/schema.sql`.
+The tests load your file into a fresh PostgreSQL database and try inserts and deletes that your tables must accept or reject.
 
-```
-OPEN the project -> EDIT a TODO -> RUN the tests -> READ the feedback -> STOP when all pass
-                        ^                                  |
-                        +------------ next task -----------+
-```
+**Time:** about 30 minutes.
 
-In words: open the lab project, edit the TODO for one task, run the tests, read what the failing test tells you, and repeat with the next task. Stop when every test passes.
-
-**Time:** about 30 minutes for the tasks, plus up to 10 minutes the first time if your workspace needs the [setup](#setup) steps.
+You need no database server of your own: the tests start a private PostgreSQL 16 for each run and delete it afterwards.
 
 ## Quick start
 
-1. **Open** the lab project in VS Code, then open its terminal with **Terminal > New Terminal**. Go into the Maven project folder:
+1. Open `src/schema.sql`. It holds only comments.
+2. Select **Run Tests** before you change anything.
 
-   ```
-   cd starter
-   ```
-
-   Run every command in this README from this `starter` folder.
-2. **Run** the tests:
-
-   ```
-   mvn -q -o test
-   ```
-
-   **All 5 tests fail at first. That is expected:** the starter file holds only comments, and each failure is a task you have not done yet.
-
-   If Maven instead says it cannot resolve a dependency, run `mvn -q dependency:go-offline` once (it needs the internet), then run the tests again.
-3. **Edit** the file for one task in [Your tasks](#your-tasks).
-4. **Read** the feedback: each failing test names the table, column or criterion to fix next. Run that task's test command again after each change.
-5. **Stop** when the full run `mvn -q -o test` prints no `[ERROR]` lines.
-
-The tests need a PostgreSQL server they can reach, JDK 25 and Maven 3.9 or later ([Prerequisites](#prerequisites)). If a command fails, see [Troubleshooting](#troubleshooting).
-
-## Your tasks
-
-All five tasks are in `starter/schema.sql`. Read [the user story](#the-user-story) first. After each task, run its test; it is done when the run prints no `[ERROR]` lines.
-
-- [ ] **1. Create the three tables.**
-  `mvn -q -o test -Dtest='SchemaTest#task1Tables'`
-- [ ] **2. Make `students` meet criterion 1.**
-  `mvn -q -o test -Dtest='SchemaTest#task2Students'`
-- [ ] **3. Make `courses` meet criterion 2.**
-  `mvn -q -o test -Dtest='SchemaTest#task3Courses'`
-- [ ] **4. Connect students and courses (criteria 3 and 5).**
-  `mvn -q -o test -Dtest='SchemaTest#task4EnrollmentKeys'`
-- [ ] **5. Record when and how well (criterion 4).**
-  `mvn -q -o test -Dtest='SchemaTest#task5EnrollmentDefaults'`
-
-**Finish:** run all the tests with `mvn -q -o test`. You are done when it prints no `[ERROR]` lines and `target/surefire-reports/relational.SchemaTest.txt` begins with:
+   **All 5 visible tests fail at first. That is expected: the file holds no tables yet.**
+   Each failure names the task, table, column or criterion to fix next.
+3. Work through the checklist below. After each task, select **Run Tests** again and read the remaining failures.
+4. **You are finished when all 5 visible tests pass.** Then select **Submit**.
+   Submitting also runs held-out tests you can't see. They try the edge cases of each criterion, so meet every criterion in full, not only the cases the visible tests try.
 
 ```
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+OPEN schema.sql -> RUN TESTS: 5 fail (expected)
+  -> READ the failures -> EDIT the next task -> RUN TESTS again
+  -> repeat for Tasks 1-5 -> SUBMIT when all 5 tests pass
 ```
 
-`WARNING:` lines from Java or Maven, such as `WARNING: A restricted method ...`, are not test failures.
+In words: open the file, run the tests, read which tasks fail, complete one task, run the tests again, and submit when they all pass.
+
+## Checklist
+
+All five tasks are in `src/schema.sql`. Read [the user story](#the-user-story) first.
+
+- [ ] Task 1: create the three tables (test `test_task1_tables`)
+- [ ] Task 2: make `students` meet criterion 1 (test `test_task2_students`)
+- [ ] Task 3: make `courses` meet criterion 2 (test `test_task3_courses`)
+- [ ] Task 4: connect students and courses, criteria 3 and 5 (test `test_task4_enrollment_keys`)
+- [ ] Task 5: record when and how well, criterion 4 (test `test_task5_enrollment_defaults`)
+
+A task is done when its test passes.
+Edit only `schema.sql`. The tests in `test/` are restored to their original state before your work is graded, so changes to them do not count.
+
+From a terminal in the project folder, you can run one task's test on its own, for example `python -m pytest -q -k task1`, or all of them with `python -m pytest -q`.
 
 ## The user story
 
@@ -81,108 +64,86 @@ Use exactly these table and column names, because the tests look them up:
 
 You choose the data types, keys, constraints and defaults. Any design that meets the criteria passes; the tests check behaviour, not one way of writing it.
 
-## Task details
+## Task steps
 
-1. **Create the three tables.** Below the comment lines of `schema.sql`, write one `CREATE TABLE` statement for each table, with every listed column. Create `students` and `courses` before `enrollments`, because a foreign key can only point at a table that already exists.
-   - Until all three tables and ten columns exist, the test says `schema.sql must create a table named ...` or `Table ... has no column named ...`.
-   - If the file has an SQL mistake, every test says `schema.sql did not run:` followed by PostgreSQL's message. Fix that first.
+### Task 1: create the three tables
 
-   <details><summary>Hint</summary>
+1. Below the comment lines of `schema.sql`, write one `CREATE TABLE` statement for each table, with every listed column.
+2. Create `students` and `courses` before `enrollments`, because a foreign key can only point at a table that already exists.
+3. Until all three tables and ten columns exist, the test says `schema.sql must create a table named ...` or `Table ... has no column named ...`.
+4. If the file has an SQL mistake, every test says `schema.sql did not run:` followed by PostgreSQL's message. Fix that first.
 
-   Pick a data type for each column now; you can refine types and add constraints in the next tasks.
+<details><summary>Hint</summary>
 
-   </details>
+Pick a data type for each column now; you can refine types and add constraints in the next tasks.
 
-2. **Make `students` meet criterion 1.** A failure starts with `Criterion 1 (students):` and names the missing rule.
+</details>
 
-   <details><summary>Hint</summary>
+### Task 2: make `students` meet criterion 1
 
-   For each column, decide which data type fits its values and which rules PostgreSQL must enforce: which column identifies a student, which values are required, which must be unique, and how a name longer than 100 characters is refused.
+A failure starts with `Criterion 1 (students):` and names the missing rule.
 
-   </details>
+<details><summary>Hint</summary>
 
-3. **Make `courses` meet criterion 2.** A failure starts with `Criterion 2 (courses):`.
+For each column, decide which data type fits its values and which rules PostgreSQL must enforce: which column identifies a student, which values are required, which must be unique, and how a name longer than 100 characters is refused.
 
-   <details><summary>Hint</summary>
+</details>
 
-   Decide which column identifies a course and what type suits a code like `SQL101`, which columns are required, and how to refuse a capacity that is not greater than 0.
+### Task 3: make `courses` meet criterion 2
 
-   </details>
+A failure starts with `Criterion 2 (courses):`.
 
-4. **Connect students and courses (criteria 3 and 5)** in `enrollments`. A failure starts with `Criterion 3 (many-to-many):` or `Criterion 5 (existing student and course):`.
+<details><summary>Hint</summary>
 
-   <details><summary>Hint</summary>
+Decide which column identifies a course and what type suits a code like `SQL101`, which columns are required, and how to refuse a capacity that is not greater than 0.
 
-   Decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to.
+</details>
 
-   </details>
+### Task 4: connect students and courses (criteria 3 and 5)
 
-5. **Record when and how well (criterion 4)** in the `enrolled_at` and `grade` columns. A failure starts with `Criterion 4 (enrollment time and grade):`.
+Work in `enrollments`. A failure starts with `Criterion 3 (many-to-many):` or `Criterion 5 (existing student and course):`.
 
-   <details><summary>Hint</summary>
+<details><summary>Hint</summary>
 
-   For `enrolled_at`, choose a type that holds a date and a time of day, make it required, and give it a default so PostgreSQL fills in the current time. For `grade`, choose an exact decimal type that keeps two decimal places, allow it to be empty, and refuse values outside 0 to 100.
+Decide which columns must refer to which table, which of them are required, and which combination of columns must be unique so a student cannot enroll in the same course twice. Use column types that match the columns they refer to. Criterion 5 also says what happens when someone tries to delete a student who has enrollments.
 
-   </details>
+</details>
+
+### Task 5: record when and how well (criterion 4)
+
+Work on the `enrolled_at` and `grade` columns. A failure starts with `Criterion 4 (enrollment time and grade):`.
+
+<details><summary>Hint</summary>
+
+For `enrolled_at`, choose a type that holds a date and a time of day, make it required, and give it a default so PostgreSQL fills in the current time. For `grade`, choose an exact decimal type that keeps two decimal places, allow it to be empty, and refuse values outside 0 to 100.
+
+</details>
 
 **Starting over:** delete every line of `schema.sql` below its comment block. The shipped file holds only comments, so all five tests fail again.
 
+## Try it by hand (optional, not tested)
+
+`python -m test.practice src/schema.sql` starts a private PostgreSQL, runs your file in a new, empty database, and opens a `psql` prompt on it.
+Try inserts the criteria should accept or reject, and use `\d students` to see a table's columns and constraints.
+Leave with `\q`: the practice database is deleted, so the next start is fresh.
+
 ## What the tests do
 
-Each run creates a new database with a unique name such as `relational_design_lab_3f9c0a1b7d2e`, runs your `schema.sql` in it, runs the tests, and drops that database. It never touches a database it did not create. While a run is in progress, the database's name is in `starter/target/lab-database.txt`. After setup, the tests run offline and talk only to that PostgreSQL server.
+The first test starts a private PostgreSQL 16 from the `pgserver` package in a temporary folder.
+Every test then gets its own new, empty database, runs your `schema.sql` in it, tries its inserts and deletes, and drops that database.
+At the end of the run the server and its folder are deleted. The tests never connect to any other database.
 
-## Prerequisites
+## Using an AI assistant
 
-| Tool | Version | Check |
-| --- | --- | --- |
-| PostgreSQL server and `psql` | 18 (16 or later works) | the connection check below |
-| JDK | 25 | `java -version` |
-| Apache Maven | 3.9 or later | `mvn -v` |
-
-### Connection check
-
-The tests connect to `localhost` port `5432` as your login user, through database `postgres`. Check that the same connection works:
-
-```
-psql -h localhost -p 5432 -d postgres -c "SELECT version();"
-```
-
-It should print one row starting `PostgreSQL 18` (or 16, 17) without asking for a password.
-
-## Setup
-
-The quick start is all the setup most learners need. Only if the connection check needs other values: the tests read the same environment variables as `psql`. Set the ones you need in the terminal where you run the tests; they last until you close it.
-
-| Variable | Meaning | Default |
-| --- | --- | --- |
-| `PGHOST` | server host name (not a socket folder) | `localhost` |
-| `PGPORT` | server port | `5432` |
-| `PGUSER` | a PostgreSQL user allowed to create databases | your login name |
-| `PGDATABASE` | an existing database to connect to first | `postgres` |
-
-For example `export PGUSER=postgres` (macOS or Linux) or `$env:PGUSER = "postgres"` (Windows PowerShell).
-
-**If your server asks for a password**, put it in a password file, which both `psql` and the tests read. Write one line, `localhost:5432:*:postgres:your-password`, with your own port, user and password:
-
-- macOS or Linux: in `~/.pgpass`, then run `chmod 600 ~/.pgpass` (`psql` ignores a password file that others can read).
-- Windows: in `%APPDATA%\postgresql\pgpass.conf` (create the `postgresql` folder if it is missing).
-
-Never write a password into `schema.sql` or any file you share. The tests also accept a `PGPASSWORD` variable, but PostgreSQL recommends against it, because on some systems other users can read it.
+If you use an AI assistant, ask it to explain, not to answer.
+"Explain what a composite primary key does" teaches you design; "write my schema" does not.
+Check any explanation with a test run before you trust it.
 
 ## Troubleshooting
 
 | What you see | What to do |
 | --- | --- |
-| `cd: no such file or directory: starter` (or `Cannot find path`) | The terminal is not in the lab's top folder, the one that holds this `README.md` and the `starter` folder. Change to that folder, then run `cd starter`. |
-| `Could not reach PostgreSQL to create the lab database`, `Connection refused` or `could not connect` | Run the [connection check](#connection-check). If it fails too, start your PostgreSQL server or check its port. |
-| `password authentication failed` or `no password was provided` | Set up a [password file](#setup), or set `PGUSER`. |
-| `role "..." does not exist` | Your login name is not a PostgreSQL user. Set `PGUSER` to one that is, such as `postgres` (see [Setup](#setup)). |
-| `permission denied to create database` | Use a PostgreSQL user that may create databases, such as `postgres`. |
-| `PGHOST is set to "...", which is not a host name` | The tests connect over TCP. Set `PGHOST` to `localhost` or your server's host name. |
+| `pgserver package, which is not installed` | Run `python -m pip install -r requirements.txt`. `pgserver` needs Python 3.9 to 3.12; **Run Tests** uses a supported Python. |
 | `schema.sql did not run: ... relation "students" does not exist` | A foreign key points at a table created later in the file. Create `students` and `courses` first. |
-| Maven cannot resolve a dependency offline | Run `mvn -q dependency:go-offline` once with the internet on. |
-| A run was interrupted | Drop the database named in `starter/target/lab-database.txt`, for example `psql -h localhost -d postgres -c "DROP DATABASE relational_design_lab_3f9c0a1b7d2e;"` with the name from the file. |
-
-## Tested with
-
-PostgreSQL 18.3, JDK 25 and Maven 3.9.9 on macOS (arm64), with no-password and with password-file connections. Linux and Windows runs have not been recorded yet; the steps follow PostgreSQL's documented behaviour there.
+| `schema.sql did not run: ... syntax error` | Read the line PostgreSQL quotes. A missing comma between columns or a missing semicolon between statements is the usual cause. |
+| `This statement should be rejected by a rule for that criterion, but the error was different` | PostgreSQL refused the row for another reason, for example a type that cannot hold the value. Read its message and fix that column first. |
